@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SubjectTracker</title>
     <link rel="stylesheet", href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body style="margin: 0; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: row;">
     
@@ -32,13 +33,33 @@
     </div>
     <div id="subjdisplay" class="subjdisplay">
         <div class="subjtitles">
-            <span class="subjtitle">Physics</span>
-            <span class="subjt2">1 hour(s) total</span>
-            <button class="subjstatus" onclick="togglerec()">Recording...</button>
+            <span id="subjtitle" class="subjtitle">Physics</span>
+            <span id="subjt2" class="subjt2">0 hour(s) tracked</span>
+            <button id="subjstatus" class="subjstatus" onclick="togglerec()">Not Recording!</button>
         </div>
         
         <div class="subjinfo">
-            
+            <div class="subjgraph">
+                <canvas id="exampleChart"></canvas>
+            </div>
+            <div class="subjsessions">
+                <span class="sessiontitle">Sessions</span>
+                <div class="tablediv">
+                    <table class="sessiontable">
+                        <tr>
+                            <th>Start</th>
+                            <th>End</th>  
+                            <th>Duriation</th>
+                        </tr>
+                        <tr>
+                            <td>idk like yesterday</td>
+                            <td>Yeah what he said</td>
+                            <td>I thought it was tmrw??</td>
+                        </tr>
+                    </table>
+                </div>
+                
+            </div>
         </div>
     </div>
 </body>

@@ -132,6 +132,8 @@
 }
 
 .subjectcontainer {
+
+    
     height: fit-content;
     width: 100%;
 
@@ -179,12 +181,20 @@
 }
 
 .subjinfo {
-    height: 100%;
+    height: fit-content;
     width: 100%;
+    padding: 20px;
+
+    display: grid;
+    grid-template-columns: calc(50% - 15px) calc(50% - 15px);
+    column-gap: 30px;
+
+    box-sizing: border-box;
 }
 
 .subjstatus {
-    background-color: #008d4c;
+    
+    background-color: #d73925;
     border: transparent;
     width: fit-content;
     padding: 5px;
@@ -199,10 +209,11 @@
 }
 
 .subjstatus:hover {
-    background-color: #01753e;
+    background-color: #a31e0c;
 }
 
 .subjtitles {
+    box-sizing: border-box;
     width: 100%;
     height: fit-content;
     align-items: center;
@@ -211,4 +222,52 @@
 
     border-bottom:1px solid #5f5f5f;
     padding-bottom: 10px;
+}
+
+.subjgraph {
+    background-color: #c7c7c7;
+    aspect-ratio: 4/2;   
+    width: 100%;
+
+    border: 1px solid #888888;
+    border-radius: 10px;
+}
+
+.subjsessions {
+    background-color: #c7c7c7;
+    aspect-ratio: 4/2;   
+    width: 100%;
+
+    border: 1px solid #888888;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sessiontitle {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+.tablediv {
+    height: calc(100% - 35px);
+    width: 100%;
+    padding: 10px;
+
+    box-sizing: border-box;
+}
+
+.sessiontable {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+.sessiontable td, .sessiontable th {
+    border: 1px solid black;
 }
