@@ -3,10 +3,15 @@ let subjdisplay = document.getElementById("subjdisplay")
 let subjstatus = document.getElementById("subjstatus")
 let sessiontable = document.getElementById("sessiontable")
 
-let data = {} || getdata()
+let data = getdata()
+if (data ==  "") {
+    let data = {}
+}
+
 let selectedsubj = ""
 
 function writedata() {
+    console.log("wrote")
     document.cookie = "data="+ JSON.stringify(data) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/"
 }
 function getdata() {
@@ -19,11 +24,56 @@ function getdata() {
     }
 }
 
+function loadsubjects() {
+    let today = document.getElementById("todaysubj")
+    let yesterday = document.getElementById("yesterdaysubj")
+    let lastweek = document.getElementById("lastweeksubj")
+    let longtimeago = document.getElementById("longtimesubj")
+    for (let i = 0; i < Object.keys(data).length; i++) {
+        let lastdate = new Date(data[Object.keys(data)[i]]["date"])
+        console.log("i", i)
+        if (lastdate.setHours(0,0,0,0) ==  new Date().setHours(0,0,0,0)) {
+            console.log("y")
+            addsubj(Object.keys(data)[i], true)
+        }
+    }
+}
+
+function getdaily() {
+    let dailydata = {}
+    console.log(12)
+    for (let i = 0; i < Object.keys(data[selectedsubj]["sessions"]).length; i++) {
+        let sessionstart = new Date(Number(Object.keys(data[selectedsubj]["sessions"])[i])) 
+        let sessionend = new Date(data[selectedsubj]["sessions"][Object.keys(data[selectedsubj]["sessions"])[i]])
+        console.log(new Date(Number(Object.keys(data[selectedsubj]["sessions"])[i])))
+        if (!dailydata[sessionstart.getDate()]){
+           
+            dailydata[sessionstart.getDate()] = 0
+            console.log("new", dailydata)
+        }
+
+        console.log(sessionend, sessionend.setHours(0,0,0,0), sessionend.setHours(24,0,0,0)) // 0000 is start of day, 24,0,0,0 is end
+
+        if (sessionstart.getDate() == sessionend.getDate()) {
+            dailydata[sessionstart.getDate()] += sessionend - sessionstart
+            console.log("q", Number(sessionend) - Number(sessionstart))
+        } else {
+            console.log(sessionstart.toTimeString())
+            let totaltime = 0
+
+            dailydata[sessionstart.getDate()] += sessionend.setHours(0,0,0,0) - sessionstart
+            dailydata[sessionstart.getDate()] += sessionend - sessionstart.setHours(24,0,0,0)
+        }
+
+        console.log(dailydata)
+    }
+}
+
 function togglebar() {
     if (document.getElementById("bartoggle").innerHTML == "&lt;") {
         console.log("yes")
         document.getElementById("sidebar").style.marginLeft = "-250px"
-        document.getElementById("bartoggle").style.marginLeft = "-240px"
+        document.getElementById("bartoggle").style.marginLeft = "-25d0px"
         document.getElementById("subjdisplay").style.width = "100vw"
         document.getElementById("bartoggle").innerHTML = ">"
     } else {
@@ -36,12 +86,25 @@ function togglebar() {
     
 }
 
-function addsubj(name) {
-    if (name in data) {
-        alert("A subject with that name exists already!")
+function addsubj(name, loading=false) {
+    if (name in data && !loading ) {
+        console.log("didnt add", loading)
         return;
     }
-    data[name] = {"date": Date.now(), "recording": false, "timestamp": null, "sessions": {}} // date is when created/ last edited, time and timestamp are for total time tracking
+    if (name.trim().length == 0) {
+        
+        if (name in data) {
+            delete data[name]
+            writedata()
+        }
+        alert("Name cannot be whitespace only!")
+        return;
+    }
+    if (!loading) {
+        data[name] = {"date": Date.now(), "recording": false, "timestamp": null, "sessions": {}} // date is when created/ last edited, time and timestamp are for total time tracking
+        writedata()
+    }
+    
     console.log(name, Date.now())
     subjdiv = document.createElement("div")
     subjdiv.className = "subject"
@@ -51,6 +114,7 @@ function addsubj(name) {
     }
     
     todaysubj.appendChild(subjdiv)
+    
 }
 
 async function selectsubj(name) {
@@ -71,7 +135,6 @@ async function selectsubj(name) {
     await new Promise(res => setTimeout(res, 500))
 
     sessiontable.innerHTML = "<thead><th>Start</th><th>End</th><th>Duriation</th></thead>"
-
 
 
     for (let i = 0; i < Object.keys(data[name]["sessions"]).length; i++) {
@@ -150,6 +213,7 @@ function togglerec() { // readability is optional
     if (data[selectedsubj]["recording"] == true) {
         data[selectedsubj]["recording"] = false
         data[selectedsubj]["sessions"][data[selectedsubj]["timestamp"]] = Date.now()
+        writedata()
 
         let totaltime = 0
         

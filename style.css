@@ -18,7 +18,7 @@
     font-family: monospace;
     font-size: large;
 
-    left: 235px;
+    left: 250px;
     top: 5px;
 
     height: 50px;
@@ -163,8 +163,6 @@
     font-family: Arial, Helvetica, sans-serif;
     color: #5f5f5f;
 
-    
-
     -webkit-user-select: none;
     user-select: none;
 }
@@ -181,15 +179,24 @@
 }
 
 .subjinfo {
-    height: fit-content;
+    height: 100%;
     width: 100%;
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
 
     display: grid;
-    grid-template-columns: calc(50% - 15px) calc(50% - 15px);
-    column-gap: 30px;
+    grid-template-columns: calc(50% - 10px) calc(50% - 10px);
+    column-gap: 20px;
 
     box-sizing: border-box;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    color: transparent;
+    width: 0px;
 }
 
 .subjstatus {
@@ -224,22 +231,19 @@
     padding-bottom: 10px;
 }
 
-.subjgraph {
+.subjbox {
     background-color: #c7c7c7;
     aspect-ratio: 4/2;   
     width: 100%;
+
+    margin-top: 20px;
 
     border: 1px solid #888888;
     border-radius: 10px;
 }
 
 .subjsessions {
-    background-color: #c7c7c7;
-    aspect-ratio: 4/2;   
-    width: 100%;
-
-    border: 1px solid #888888;
-    border-radius: 10px;
+    
     display: flex;
     flex-direction: column;
 }

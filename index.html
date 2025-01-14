@@ -7,9 +7,9 @@
     <link rel="stylesheet", href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body style="margin: 0; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: row; background-color: rgb(228, 228, 228);">
+<body style="margin: 0; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: row; background-color: rgb(228, 228, 228);" onload=loadsubjects()>
     
-    <div id="sidebar" class="sidebar">
+    <div id="sidebar" class="sidebar" ">
         
         <div id="bartoggle" class="bartoggle" onclick="togglebar()"><</div>
         <div class="newsubject">
@@ -35,10 +35,10 @@
         </div>
         
         <div class="subjinfo">
-            <div class="subjgraph">
+            <div class="subjbox">
                 <canvas id="exampleChart"></canvas>
             </div>
-            <div class="subjsessions">
+            <div class="subjsessions subjbox">
                 <span class="sessiontitle">Sessions</span>
                 <div id="tablediv" class="tablediv">
                     <table id="sessiontable" class="sessiontable">
@@ -51,6 +51,10 @@
                 </div>
                 
             </div>
+
+            <div class="subjbox"></div>
+            <div class="subjbox"></div>
+            
         </div>
     </div>
 </body>
