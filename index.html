@@ -7,7 +7,7 @@
     <link rel="stylesheet", href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body style="margin: 0; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: row;">
+<body style="margin: 0; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: row; background-color: rgb(228, 228, 228);">
     
     <div id="sidebar" class="sidebar">
         
@@ -18,16 +18,12 @@
         </div>
         <div class="subjectdiv">
             <div class="seperator">Today</div>
-            <div id="todaysubj" class="subjectcontainer">
-                <div class="subject">Test Subject</div>
-                <div class="subject">Text Subject</div>
-                <div class="subject">Text Subject</div>
-            </div>
+            <div id="todaysubj" class="subjectcontainer"></div>
             <div class="seperator">Yesteday</div>
             <div id="yesterdaysubj" class="subjectcontainer"></div>
             <div class="seperator">Last Week</div>
             <div id="lastweeksubj" class="subjectcontainer"></div>
-            <div class="seperator">A long time ago</div>
+            <div class="seperator">A Long Time Ago</div>
             <div id="longtimesubj" class="subjectcontainer"></div>
         </div>
     </div>
@@ -44,18 +40,13 @@
             </div>
             <div class="subjsessions">
                 <span class="sessiontitle">Sessions</span>
-                <div class="tablediv">
-                    <table class="sessiontable">
-                        <tr>
+                <div id="tablediv" class="tablediv">
+                    <table id="sessiontable" class="sessiontable">
+                        <thead>
                             <th>Start</th>
                             <th>End</th>  
                             <th>Duriation</th>
-                        </tr>
-                        <tr>
-                            <td>idk like yesterday</td>
-                            <td>Yeah what he said</td>
-                            <td>I thought it was tmrw??</td>
-                        </tr>
+                        </thead>
                     </table>
                 </div>
                 
