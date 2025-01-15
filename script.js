@@ -217,27 +217,6 @@ async function selectsubj(name) {
     subtitle.innerText += " tracked"
 }
 
-document.addEventListener('DOMContentLoaded', (event) => { // Test data for now
-    const ctx = document.getElementById('Chart').getContext('2d');
-    timechart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-});
 
 function drawchart(inputdata) {
     try {timechart.destroy()} catch {}
@@ -266,10 +245,23 @@ function drawchart(inputdata) {
         data: {
             labels: chartlabels,
             datasets: [{
-                label: "Time Spent",
                 data: chartdata,
                 borderWidth: 1
             }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (item) => {
+                            return `${(item.formattedValue)}s`
+                        }
+                    }
+                }
+            }
         }
     })
 }
