@@ -8,7 +8,9 @@ if (data ==  "") {
     let data = {}
 }
 
-let selectedsubj = ""
+var timechart;
+
+var selectedsubj;
 
 function writedata() {
     console.log("wrote")
@@ -32,48 +34,76 @@ function loadsubjects() {
     for (let i = 0; i < Object.keys(data).length; i++) {
         let lastdate = new Date(data[Object.keys(data)[i]]["date"])
         console.log("i", i)
-        if (lastdate.setHours(0,0,0,0) ==  new Date().setHours(0,0,0,0)) {
-            console.log("y")
-            addsubj(Object.keys(data)[i], true)
-        }
+        console.log("y")
+        addsubj(Object.keys(data)[i], true)
+    
     }
 }
 
-function getdaily() {
+function getdaily(name) { // 100% efficient and clean, im never touching this again
     let dailydata = {}
-    console.log(12)
-    for (let i = 0; i < Object.keys(data[selectedsubj]["sessions"]).length; i++) {
-        let sessionstart = new Date(Number(Object.keys(data[selectedsubj]["sessions"])[i])) 
-        let sessionend = new Date(data[selectedsubj]["sessions"][Object.keys(data[selectedsubj]["sessions"])[i]])
-        console.log(new Date(Number(Object.keys(data[selectedsubj]["sessions"])[i])))
-        if (!dailydata[sessionstart.getDate()]){
-           
-            dailydata[sessionstart.getDate()] = 0
+    for (let i = 0; i < Object.keys(data[name]["sessions"]).length; i++) {
+
+        let sessionstart = Number(Object.keys(data[name]["sessions"])[i])
+        let sessionend = Number(data[name]["sessions"][Object.keys(data[name]["sessions"])[i]])
+
+        console.log(new Date(Number(Object.keys(data[name]["sessions"])[i])), sessionend)
+        if (!dailydata[`${new Date(sessionstart).getDate()}.${new Date(sessionstart).getMonth() +1}.${new Date(sessionstart).getFullYear()}`]){
+            if (!(new Date(Date.now()).setHours(24,0,0,0) - new Date(sessionstart).setHours(0,0,0,0) > 86400000*7)) {
+                dailydata[`${new Date(sessionstart).getDate()}.${new Date(sessionstart).getMonth() +1}.${new Date(sessionstart).getFullYear()}`] = 0
             console.log("new", dailydata)
+            }
+            
         }
 
-        console.log(sessionend, sessionend.setHours(0,0,0,0), sessionend.setHours(24,0,0,0)) // 0000 is start of day, 24,0,0,0 is end
+        console.log(sessionend, new Date(sessionend).setHours(0,0,0,0), new Date(sessionend).setHours(24,0,0,0), new Date(sessionend).getDate()) // 0000 is start of day, 24,0,0,0 is end
 
-        if (sessionstart.getDate() == sessionend.getDate()) {
-            dailydata[sessionstart.getDate()] += sessionend - sessionstart
+        if (new Date(sessionstart).getDate() == new Date(sessionend).getDate()) {
+            if (new Date(Date.now()).setHours(24,0,0,0) - new Date(sessionend).setHours(0,0,0,0) > 86400000*7) {
+                break;
+            }
+            dailydata[`${new Date(sessionstart).getDate()}.${new Date(sessionstart).getMonth() +1}.${new Date(sessionstart).getFullYear()}`] += sessionend - sessionstart
             console.log("q", Number(sessionend) - Number(sessionstart))
-        } else {
-            console.log(sessionstart.toTimeString())
-            let totaltime = 0
+        } else { 
+            console.log(sessionstart)
+            if (!(new Date(Date.now()).setHours(24,0,0,0) - new Date(sessionstart).setHours(0,0,0,0) > 86400000*7)) {
+                dailydata[`${new Date(sessionstart).getDate()}.${new Date(sessionstart).getMonth() +1}.${new Date(sessionstart).getFullYear()}`] += new Date(sessionstart).setHours(24,0,0,0) - sessionstart
+            }
+            
 
-            dailydata[sessionstart.getDate()] += sessionend.setHours(0,0,0,0) - sessionstart
-            dailydata[sessionstart.getDate()] += sessionend - sessionstart.setHours(24,0,0,0)
+            let betweentime = new Date(sessionend).setHours(0,0,0,0) - new Date(sessionstart).setHours(24,0,0,0)
+            let dayamount = betweentime/86400000
+            console.log("dayamount ", dayamount)
+
+            for (let i = 1; i <= dayamount; i++) {
+                let betweenday = Number(sessionend - 86400000*i)
+                if (new Date(Date.now()).setHours(24,0,0,0) - new Date(betweenday).setHours(0,0,0,0) > 86400000*7) {
+                    continue;
+                }
+                if (!dailydata[`${new Date(betweenday).getDate()}.${new Date(betweenday).getMonth() +1}.${new Date(betweenday).getFullYear()}`]) {
+                    dailydata[`${new Date(betweenday).getDate()}.${new Date(betweenday).getMonth() +1}.${new Date(betweenday).getFullYear()}`] = 0
+                }
+                dailydata[`${new Date(betweenday).getDate()}.${new Date(betweenday).getMonth() +1}.${new Date(betweenday).getFullYear()}`] += 86400000
+                console.log("between ",new Date(betweenday))
+                console.log(data)
+            }
+
+            if (!(new Date(Date.now()).setHours(24,0,0,0) - new Date(sessionend).setHours(0,0,0,0) > 86400000*7)) {
+                dailydata[`${new Date(sessionend).getDate()}.${new Date(sessionend).getMonth() +1}.${new Date(sessionend).getFullYear()}`] += sessionend - new Date(sessionend).setHours(0,0,0,0)
+            }
+            
         }
 
         console.log(dailydata)
     }
+    return dailydata
 }
 
 function togglebar() {
     if (document.getElementById("bartoggle").innerHTML == "&lt;") {
         console.log("yes")
         document.getElementById("sidebar").style.marginLeft = "-250px"
-        document.getElementById("bartoggle").style.marginLeft = "-25d0px"
+        document.getElementById("bartoggle").style.marginLeft = "-250px"
         document.getElementById("subjdisplay").style.width = "100vw"
         document.getElementById("bartoggle").innerHTML = ">"
     } else {
@@ -118,7 +148,7 @@ function addsubj(name, loading=false) {
 }
 
 async function selectsubj(name) {
-    selectedsubj = name
+    console.log(getdaily(name))
     document.getElementById("subjtitle").innerText = name
     let subtitle = document.getElementById("subjt2")
     let totaltime = 0
@@ -188,8 +218,8 @@ async function selectsubj(name) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => { // Test data for now
-    const ctx = document.getElementById('exampleChart').getContext('2d');
-    const exampleChart = new Chart(ctx, {
+    const ctx = document.getElementById('Chart').getContext('2d');
+    timechart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -208,6 +238,41 @@ document.addEventListener('DOMContentLoaded', (event) => { // Test data for now
         }
     });
 });
+
+function drawchart(inputdata) {
+    try {timechart.destroy()} catch {}
+
+    let chartlabels = []
+    let chartdata = []
+
+    let dates = Object.keys(inputdata);
+    let values = Object.values(inputdata);
+
+    let dataArray = dates.map((date, index) => {
+        console.log("date", date)
+        let [day, month, year] = date.split('.').map(Number);
+        return { date: new Date(year, month - 1, day), value: values[index] };
+    });
+
+    dataArray.sort((a, b) => a.date - b.date);
+
+    dataArray.forEach(item => {
+        chartlabels.push(item.date.toLocaleDateString());
+        chartdata.push(item.value);
+    });
+    const ctx = document.getElementById("Chart").getContext("2d")
+    timechart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: chartlabels,
+            datasets: [{
+                label: "Time Spent",
+                data: chartdata,
+                borderWidth: 1
+            }]
+        }
+    })
+}
 
 function togglerec() { // readability is optional
     if (data[selectedsubj]["recording"] == true) {
