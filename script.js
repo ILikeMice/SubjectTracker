@@ -27,16 +27,12 @@ function getdata() {
 }
 
 function loadsubjects() {
-    let today = document.getElementById("todaysubj")
-    let yesterday = document.getElementById("yesterdaysubj")
-    let lastweek = document.getElementById("lastweeksubj")
-    let longtimeago = document.getElementById("longtimesubj")
     for (let i = 0; i < Object.keys(data).length; i++) {
         let lastdate = new Date(data[Object.keys(data)[i]]["date"])
         console.log("i", i)
         console.log("y")
+        
         addsubj(Object.keys(data)[i], true)
-    
     }
 }
 
@@ -46,6 +42,16 @@ function getdaily(name) { // 100% efficient and clean, im never touching this ag
 
         let sessionstart = Number(Object.keys(data[name]["sessions"])[i])
         let sessionend = Number(data[name]["sessions"][Object.keys(data[name]["sessions"])[i]])
+
+        for (let i = 0; i < 7; i++) {
+            let currdate = Date.now() - (86400000*i)
+            console.log("thisisi", i, currdate)
+            if (!dailydata[`${new Date(currdate).getDate()}.${new Date(currdate).getMonth() +1}.${new Date(currdate).getFullYear()}`]) {
+                dailydata[`${new Date(currdate).getDate()}.${new Date(currdate).getMonth() +1}.${new Date(currdate).getFullYear()}`] = 0
+            }
+        }
+        console.log("thisisit" ,dailydata)
+
 
         console.log(new Date(Number(Object.keys(data[name]["sessions"])[i])), sessionend)
         if (!dailydata[`${new Date(sessionstart).getDate()}.${new Date(sessionstart).getMonth() +1}.${new Date(sessionstart).getFullYear()}`]){
@@ -115,7 +121,6 @@ function togglebar() {
         document.getElementById("subjplaceholder").style.width = "calc(100vw - 250px)"
         document.getElementById("bartoggle").innerHTML = "<"
     }
-    
 }
 
 function addsubj(name, loading=false) {
@@ -124,7 +129,7 @@ function addsubj(name, loading=false) {
         return;
     }
     if (name.trim().length == 0) {
-        
+
         if (name in data) {
             delete data[name]
             writedata()
@@ -144,14 +149,34 @@ function addsubj(name, loading=false) {
     subjdiv.onclick = () => {
         selectsubj(name)
     }
-    
-    todaysubj.appendChild(subjdiv)
+    let today = document.getElementById("todaysubj")
+    let yesterday = document.getElementById("yesterdaysubj")
+    let thisweek = document.getElementById("thisweeksubj")
+    let longtimeago = document.getElementById("longtimesubj")
+    console.log("adding",  data[name]["date"], Date.now() - 86400000)
+    if (data[name]["date"] > new Date(Date.now()).setHours(24,0,0,0) - 86400000) {
+        today.appendChild(subjdiv)
+        console.log("today")
+    } else if (data[name]["date"] > new Date(Date.now()).setHours(24,0,0,0) - 86400000*2) {
+        yesterday.appendChild(subjdiv)
+        console.log("yterday")
+    } else if (data[name]["date"] > new Date(Date.now()).setHours(24,0,0,0)- 86400000*7) {
+        thisweek.appendChild(subjdiv)
+        console.log("week")
+    } else {
+        longtimeago.appendChild(subjdiv)
+        console.log("other")
+    }
     
 }
 
 async function selectsubj(name) {
-    console.log(getdaily(name))
+    document.getElementById("subjstatus").onclick = () => {togglerec(name)}
+    document.getElementById("subjplaceholder").style.opacity = "0"
+    setTimeout(function() {document.getElementById("subjplaceholder").style.display = "none"}, 500)
+    
     document.getElementById("subjtitle").innerText = name
+
     drawchart(getdaily(name))
     let subtitle = document.getElementById("subjt2")
     let totaltime = 0
@@ -165,6 +190,7 @@ async function selectsubj(name) {
     
     document.getElementById("tablediv").style.height = "35px"
     console.log("smaller", document.getElementById("tablediv").style.height)
+
     await new Promise(res => setTimeout(res, 500))
 
     sessiontable.innerHTML = "<thead><th>Start</th><th>End</th><th>Duriation</th></thead>"
@@ -190,11 +216,16 @@ async function selectsubj(name) {
         let durhr = Math.floor(duriation / 3600000)
 
         if (durhr > 0) {
-            duracell.innerHTML += durhr + "h " + durmin + "m " + dursec + "s"
+            duracell.innerHTML = durhr + "h " + durmin + "m " + dursec + "s"
         } else if (durmin > 0) {
-            duracell.innerHTML += durmin + "m " + dursec + "s"
+            duracell.innerHTML = durmin + "m " + dursec + "s"
         } else {
-            duracell.innerHTML += dursec + "s"
+            if (dursec == 0) {
+                duracell.innerHTML = ((duriation / 1000) % 60).toFixed(1) + "s"
+            } else {
+                duracell.innerHTML = dursec + "s"
+            }
+            
         }
     }
 
@@ -253,6 +284,33 @@ function drawchart(inputdata) {
             }]
         },
         options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        
+                        callback: function(value) {
+                            let sec = Math.floor((value / 1000) % 60)
+                            let min = Math.floor((value / 60000) % 60)
+                            let hr = Math.floor(value / 3600000)
+                            
+                            if (hr > 0) {
+                                return hr + "h " + min + "m " + sec + "s"
+                            } else if (min > 0) {
+                                return min + "m " + sec + "s"
+                            } else {
+                                if (sec < 5) {
+                                    return ((value / 1000) % 60).toFixed(1) + "s"
+                                } else {
+                                    return sec + "s"
+                                }
+                               
+                            }
+
+                        }
+                    }
+                }
+            },
             plugins: {
                 legend: {
                     display: false
@@ -260,19 +318,44 @@ function drawchart(inputdata) {
                 tooltip: {
                     callbacks: {
                         label: (item) => {
-                            return `${(item.formattedValue)}s`
+                            let itemval = parseLocaleNumber(item.formattedValue)
+                            let sec = Math.floor(itemval  / 1000 % 60)
+                            let min = Math.floor(itemval / 60000 % 60)
+                            let hr = Math.floor(itemval  / 3600000)
+                            
+                            if (hr > 0) {
+                                return hr + "h " + min + "m " + sec + "s"
+                            } else if (min > 0) {
+                                return min + "m " + sec + "s"
+                            } else {
+                                return Number(item.formattedValue).toFixed(1) + "s"
+                            }
+
                         }
                     }
                 }
+
             }
         }
     })
 }
 
-function togglerec() { // readability is optional
+function parseLocaleNumber(stringNumber, locale) { // ty some guy on stackoverflow
+    var thousandSeparator = Intl.NumberFormat(locale).format(11111).replace(/\p{Number}/gu, '');
+    var decimalSeparator = Intl.NumberFormat(locale).format(1.1).replace(/\p{Number}/gu, '');
+
+    return parseFloat(stringNumber
+        .replace(new RegExp('\\' + thousandSeparator, 'g'), '')
+        .replace(new RegExp('\\' + decimalSeparator), '.')
+    );
+}
+
+function togglerec(name) { // readability is optional
+    let selectedsubj = name
     if (data[selectedsubj]["recording"] == true) {
         data[selectedsubj]["recording"] = false
         data[selectedsubj]["sessions"][data[selectedsubj]["timestamp"]] = Date.now()
+        data[selectedsubj]["date"] = Date.now()
         writedata()
 
         let totaltime = 0
@@ -328,7 +411,10 @@ function togglerec() { // readability is optional
         subjstatus.innerText = "Not Recording!"
         subjstatus.style.backgroundColor = "#d73925"
         writedata()
+        console.log(selectedsubj)
+        drawchart(getdaily(selectedsubj))
     } else {
+        
         data[selectedsubj]["recording"] = true
         data[selectedsubj]["timestamp"] = Date.now()
         subjstatus.style.backgroundColor = "#008d4c"
@@ -336,3 +422,5 @@ function togglerec() { // readability is optional
     }
 }
 
+
+// next: TODO in bottom left, notes in bottom right
