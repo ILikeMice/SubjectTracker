@@ -105,12 +105,14 @@ function togglebar() {
         document.getElementById("sidebar").style.marginLeft = "-250px"
         document.getElementById("bartoggle").style.marginLeft = "-250px"
         document.getElementById("subjdisplay").style.width = "100vw"
+        document.getElementById("subjplaceholder").style.width = "100vw"
         document.getElementById("bartoggle").innerHTML = ">"
     } else {
         console.log(document.getElementById("bartoggle").innerHTML)
         document.getElementById("bartoggle").style.marginLeft = "0"
         document.getElementById("sidebar").style.marginLeft = "0"
         document.getElementById("subjdisplay").style.width = "calc(100vw - 250px)"
+        document.getElementById("subjplaceholder").style.width = "calc(100vw - 250px)"
         document.getElementById("bartoggle").innerHTML = "<"
     }
     
@@ -150,6 +152,7 @@ function addsubj(name, loading=false) {
 async function selectsubj(name) {
     console.log(getdaily(name))
     document.getElementById("subjtitle").innerText = name
+    drawchart(getdaily(name))
     let subtitle = document.getElementById("subjt2")
     let totaltime = 0
     if (data[name]["recording"] == true) {

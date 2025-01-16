@@ -12,6 +12,8 @@
 
 .bartoggle {
     position: absolute;
+
+    z-index: 2;
     
     border-radius: 0 5px 5px 0;
 
@@ -278,4 +280,22 @@
 
 .sessiontable td, .sessiontable th {
     border: 1px solid black;
+}
+
+.subjplaceholder {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+
+    width: calc(100vw - 250px);
+    height: 100vh;
+
+    right: 0;
+
+    background-color: white;
+
+    transition: all 0.5s ease-in-out;
+    
 }
