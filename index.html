@@ -9,7 +9,7 @@
 </head>
 <body style="margin: 0; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: row; background-color: rgb(228, 228, 228);" onload=loadsubjects()>
     
-    <div id="sidebar" class="sidebar" ">
+    <div id="sidebar" class="sidebar">
         
         <div id="bartoggle" class="bartoggle" onclick="togglebar()"><</div>
         <div class="newsubject">
@@ -56,8 +56,14 @@
                 
             </div>
 
-            <div class="subjbox"></div>
-            <div class="subjbox"></div>
+            <div class="subjbox">
+                <span class="ssessiontitle">Todo List</span>
+                <div class="tododiv"></div>
+            </div>
+            <div class="subjbox">
+                <span class="sessiontitle"></span>
+                <div class="notediv"></div>
+            </div>
             
         </div>
     </div>

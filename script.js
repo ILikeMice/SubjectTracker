@@ -149,6 +149,7 @@ function addsubj(name, loading=false) {
     subjdiv.onclick = () => {
         selectsubj(name)
     }
+    
     let today = document.getElementById("todaysubj")
     let yesterday = document.getElementById("yesterdaysubj")
     let thisweek = document.getElementById("thisweeksubj")
