@@ -4,13 +4,26 @@ let subjstatus = document.getElementById("subjstatus")
 let sessiontable = document.getElementById("sessiontable")
 
 let data = getdata()
-if (data ==  "") {
-    let data = {}
+if (data == undefined) {
+    data = {}
+    console.log("nodata")
+    writedata()
+}
+
+let todo = gettodo()
+if (todo == undefined) {
+    todo = {}
+    writetodo()
 }
 
 var timechart;
 
 var selectedsubj;
+
+window.onerror = function(message, source, lineno, colno, error) {
+    alert(`Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\nError object: ${error}  \n data: ${data == true}`);
+    return false; // Returning false allows the default browser error handler to run as well
+};
 
 function writedata() {
     console.log("wrote")
@@ -26,7 +39,27 @@ function getdata() {
     }
 }
 
+function gettodo() {
+    let cookies = document.cookie.split(";")
+    for (let cookie of cookies) {
+      let [key, value] = cookie.trim().split("=")
+      if (key == "todo") {
+        return JSON.parse(value)
+      }
+    }
+}
+
+function writetodo() {
+    document.cookie = "todo="+ JSON.stringify(todo) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/"
+}
+
 function loadsubjects() {
+    let data = getdata()
+    if (data == undefined) {
+        data = {}
+        console.log("nodata")
+        writedata()
+    }
     for (let i = 0; i < Object.keys(data).length; i++) {
         let lastdate = new Date(data[Object.keys(data)[i]]["date"])
         console.log("i", i)
@@ -124,7 +157,7 @@ function togglebar() {
 }
 
 function addsubj(name, loading=false) {
-    if (name in data && !loading ) {
+    if (data[name] && !loading ) {
         console.log("didnt add", loading)
         return;
     }
@@ -425,3 +458,47 @@ function togglerec(name) { // readability is optional
 
 
 // next: TODO in bottom left, notes in bottom right
+
+function addtask() {
+    let taskname = document.getElementById("todoinput").value
+    let table = document.getElementById("todotable")
+
+    let tableelements = table.getElementsByTagName("tbody")[0]
+    let ids = []
+    console.log(tableelements.childNodes.length)
+    for (let i = 0; i < Math.ceil(tableelements.childNodes.length/2) + 1; i++) {
+        ids.push(String(i))
+        console.log(tableelements.childNodes[i].id)
+    }
+    for (let i = 0; i < Math.ceil(tableelements.childNodes.length/2) + 1; i++) {
+        if (!ids.includes(String(tableelements.childNodes[i].id)) && tableelements.childNodes[i].id != String(i)) {
+            tableelements.childNodes[i].id = String(i)
+            ids.splice(ids.indexOf(String(i)), 1)
+        }
+    }    
+
+    console.log(ids)
+
+    let row = table.insertRow(-1)
+    let namecell = row.insertCell(-1)
+    let donecell = row.insertCell(-1)
+
+    namecell.innerText = taskname
+    
+    let checkbox = document.createElement("input")
+    checkbox.type = "checkbox"
+    
+    
+    donecell.appendChild(checkbox)
+
+    checkbox.onclick = (event) => {
+        let checkbox = event.target
+        console.log(checkbox)
+        if (todo[checkbox.parentNode.parentNode.getElementsByTagName("td")[0].innerText] == false) {
+            todo[checkbox.parentNode.parentNode.getElementsByTagName("td")[0].innerText] = true
+        } else {
+            todo[checkbox.parentNode.parentNode.getElementsByTagName("td")[0].innerText] = false
+        }
+        writetodo()
+    }
+}

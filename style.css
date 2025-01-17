@@ -97,7 +97,7 @@
     width: 20%;
     height: 100%;
     border: none;
-    background-color: #6969fd;
+    background-color: #4e7aff;
     color: white;
 
     -webkit-user-select: none;
@@ -105,7 +105,7 @@
 }
 
 .newsubject button:hover {
-    background-color: #5757ff;
+    background-color: #5361ff;
 }
 
 .newsubject input {
@@ -235,6 +235,7 @@
 }
 
 .subjbox {
+
     background-color: #c7c7c7;
     aspect-ratio: 4/2;   
     width: 100%;
@@ -303,4 +304,56 @@
 
     -webkit-user-select: none;
     user-select: none;
+}
+
+.flexcolumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.tododiv {
+    width: 100%;
+    height: calc(100% - 65px);
+
+    padding: 10px;
+    box-sizing: border-box;
+
+    overflow: hidden;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.todotable {
+    width: 100%;
+    height: 100%;
+}
+
+.todoinputdiv {
+    width: 100%;
+    height: 30px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.todoinputdiv input {
+    width: calc(100% - 60px);
+    border-radius: 10px 0 0 10px;
+    border: none;
+
+    padding-left: 10px;
+}
+
+.todoinputdiv button {
+    width: 40px;
+    border-radius:  0 10px 10px 0;
+    border: none;
+}
+
+.todoinputdiv button:hover {
+    background-color: #b7b7b7;
 }
