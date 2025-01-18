@@ -56,29 +56,25 @@
                 
             </div>
 
-            <div class="subjbox flexcolumn">
+            <div class="subjbox flexcolumn todobox">
                 <span class="sessiontitle">Todo List</span>
-                <div class="tododiv">
+                <div id="tododiv" class="tododiv">
                     <table id="todotable" class="sessiontable">
                         <thead>
                             <th>Name</th>
-                            <th>Done</th>
+                            <th style="width: 20px;">Done</th>
                         </thead>
-                        <tr>
-                            <td>No zhidshi hoihe ohshoi feso fisf osef eosh dwa owj ijwao joijdwa ijwoaijdo jawjd ojaw wao jiowja oiwj dojwja ijwao jdwjaijao ijaow iiowjo f</td>
-                            <td><input type="checkbox" oninput="console.log(this.parentNode.parentNode.getElementsByTagName('td')[0].innerText)"></td>
-                        </tr>
+                        <tr></tr>
                     </table>
                     
                 </div>
                 <div class="todoinputdiv">
                     <input type="text" id="todoinput">
-                    <button onclick="addtask()">Add</button>
+                    <button id="addtask" onclick="addtask()">Add</button>
                 </div>
             </div>
             <div class="subjbox flexcolumn">
-                <span class="sessiontitle">Notes</span>
-                <div class="notediv"></div>
+                <div class="notediv"><textarea class="notearea" placeholder="Notes..."></textarea></div>
             </div>
             
         </div>
