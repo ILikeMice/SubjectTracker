@@ -465,18 +465,8 @@ function addtask() {
 
     let tableelements = table.getElementsByTagName("tbody")[0]
     let ids = []
-    console.log(tableelements.childNodes.length)
-    for (let i = 0; i < Math.ceil(tableelements.childNodes.length/2) + 1; i++) {
-        ids.push(String(i))
-        console.log(tableelements.childNodes[i].id)
-    }
-    for (let i = 0; i < Math.ceil(tableelements.childNodes.length/2) + 1; i++) {
-        if (!ids.includes(String(tableelements.childNodes[i].id)) && tableelements.childNodes[i].id != String(i)) {
-            tableelements.childNodes[i].id = String(i)
-            ids.splice(ids.indexOf(String(i)), 1)
-        }
-    }    
-
+    console.log(tableelements.getElementsByTagName("tr").length)
+    
     console.log(ids)
 
     let row = table.insertRow(-1)
@@ -492,13 +482,55 @@ function addtask() {
     donecell.appendChild(checkbox)
 
     checkbox.onclick = (event) => {
-        let checkbox = event.target
-        console.log(checkbox)
-        if (todo[checkbox.parentNode.parentNode.getElementsByTagName("td")[0].innerText] == false) {
-            todo[checkbox.parentNode.parentNode.getElementsByTagName("td")[0].innerText] = true
-        } else {
-            todo[checkbox.parentNode.parentNode.getElementsByTagName("td")[0].innerText] = false
+        togglesubj(String(event.target.id))
+    }
+
+    for (let i = 0; i < tableelements.getElementsByTagName("tr").length; i++) {
+        ids.push(String(i))
+        console.log(tableelements.getElementsByTagName("tr")[i].id)
+    }
+    for (let i = 0; i < tableelements.getElementsByTagName("tr").length; i++) {
+        if (!ids.includes(String(tableelements.getElementsByTagName("tr")[i].id)) && tableelements.getElementsByTagName("tr")[i].id != String(i)) {
+            tableelements.getElementsByTagName("tr")[i].id = String(i)
+            ids.splice(ids.indexOf(String(i)), 1)
+            console.log("done")
         }
+    }
+}
+
+function togglesubj(id) {
+    if (todo[id]["status"] == true) {
+        todo[id]["status"] = false
         writetodo()
+    } else {
+        todo[id]["status"] = true
+        writetodo()
+    }
+}
+
+function loadtodo() {
+    for (let i = 0; i < Object.keys(todo).length; i++) {
+        let id = Object.keys(todo)[i]
+        let name = todo[i]["name"]
+        let status = todo[i]["status"]
+
+        let table = document.getElementById("todotable").getElementsByTagName("tbody")[0]
+        let row = table.insertRow(-1)
+        row.id = id
+        let namecell = row.insertCell(-1)
+        namecell.innerText = name
+
+        let donecell = row.insertCell(-1)
+        let checkbox = document.createElement("input")
+        checkbox.type = "checkbox"
+        checkbox.value = status
+        
+        donecell.appendChild(checkbox)
+
+        checkbox.onclick = (event) => {
+            togglesubj(String(event.target.id))
+        }
+        
+        table.appendChild(row)
     }
 }
