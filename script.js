@@ -26,6 +26,7 @@ var timechart;
 
 var selectedsubj;
 
+/*
 window.onerror = function (message, source, lineno, colno, error) {
     alert(
         `Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\nError object: ${error}  \n data: ${
@@ -34,6 +35,7 @@ window.onerror = function (message, source, lineno, colno, error) {
     );
     return false; // Returning false allows the default browser error handler to run as well
 };
+*/
 
 function writedata() {
     console.log("wrote");
