@@ -26,11 +26,15 @@
             <div class="seperator">A Long Time Ago</div>
             <div id="longtimesubj" class="subjectcontainer"></div>
         </div>
+        <div id="importexport">
+            <button id="export" onclick="exportall()">Export</button>
+            <button id="import" onclick="document.getElementById('fileinp').click()">Import</button>
+            <input id="fileinp" type="file" style="display: none;" onchange="importall(this)">
+        </div>
     </div>
     <div id="subjplaceholder" class="subjplaceholder">
-        <span>Please Select or Create a new Subject!</span>
+        <span>Welcome! <br> Please Select or Create a Subject!</span>
     </div>
-   
     <div id="subjdisplay" class="subjdisplay">
         <div class="subjtitles">
             <span id="subjtitle" class="subjtitle">Physics</span>
@@ -69,15 +73,19 @@
                     
                 </div>
                 <div class="todoinputdiv">
-                    <input type="text" id="todoinput">
+                    <input type="text" id="todoinput" placeholder="Add Task...">
                     <button id="addtask" onclick="addtask()">Add</button>
                 </div>
             </div>
             <div class="subjbox flexcolumn">
-                <div class="notediv"><textarea class="notearea" placeholder="Notes..."></textarea></div>
+                <div class="notediv"><textarea id="notearea" class="notearea" placeholder="Notes..."></textarea></div>
             </div>
             
         </div>
+    </div>
+
+    <div id="custommenu" class="custommenu">
+        <button id="delitem">Delete</button>
     </div>
 </body>
 <script src="script.js"></script>

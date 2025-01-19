@@ -16,6 +16,12 @@ if (todo == undefined) {
     writetodo();
 }
 
+let notes = getnotes();
+if (notes == undefined) {
+    notes = {};
+    writenotes();
+}
+
 var timechart;
 
 var selectedsubj;
@@ -61,6 +67,29 @@ function writetodo() {
         "todo=" +
         JSON.stringify(todo) +
         "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+}
+
+function getnotes() {
+    let cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+        let [key, value] = cookie.trim().split("=");
+        if (key == "notes") {
+            return JSON.parse(value);
+        }
+    }
+}
+
+function writenotes() {
+    document.cookie =
+        "notes=" +
+        JSON.stringify(notes) +
+        "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+}
+
+document.getElementById("newsubjinput").onkeyup = (event) => {
+    if (event.code == "Enter") {
+        addsubj(document.getElementById('newsubjinput').value)
+    }
 }
 
 function loadsubjects() {
@@ -254,6 +283,7 @@ function togglebar() {
 function addsubj(name, loading = false) {
     if (data[name] && !loading) {
         console.log("didnt add", loading);
+        alert("A Subject with that name exists already!")
         return;
     }
     if (name.trim().length == 0) {
@@ -281,6 +311,27 @@ function addsubj(name, loading = false) {
     subjdiv.onclick = () => {
         selectsubj(name);
     };
+    subjdiv.ondblclick = (event) => {
+        editsubj(event.target)
+    }
+    subjdiv.addEventListener("contextmenu", (event) => {
+        event.preventDefault()
+        document.getElementById("custommenu").style.top = event.clientY + "px"
+        document.getElementById("custommenu").style.left = event.clientX + "px"
+        document.getElementById("custommenu").style.display = "unset"
+        document.getElementById("delitem").onclick = () => {
+            console.log("deleting", event.target.innerText)
+            delete data[event.target.innerText]
+            delete todo[event.target.innerText]
+            delete notes[event.target.innerText]
+            console.log(data, todo, notes)
+            writedata() 
+            writenotes()
+            writetodo()
+            console.log(data, todo, notes)
+            window.location.reload()
+        }
+    })
 
     let today = document.getElementById("todaysubj");
     let yesterday = document.getElementById("yesterdaysubj");
@@ -318,6 +369,9 @@ async function selectsubj(name) {
     document.getElementById("addtask").onclick = () => {
         addtask(name)
     }
+    document.getElementById("notearea").oninput = () => {
+        updatenote(name)
+    }
     document.getElementById("subjplaceholder").style.opacity = "0";
     setTimeout(function () {
         document.getElementById("subjplaceholder").style.display = "none";
@@ -339,6 +393,7 @@ async function selectsubj(name) {
 
     document.getElementById("tablediv").style.height = "35px";
     document.getElementById("tododiv").style.height = "35px"
+    document.getElementById("notearea").value = notes[name] || ""
     console.log("smaller", document.getElementById("tablediv").style.height);
 
     await new Promise((res) => setTimeout(res, 500));
@@ -379,7 +434,7 @@ async function selectsubj(name) {
         } else if (durmin > 0) {
             duracell.innerHTML = durmin + "m " + dursec + "s";
         } else {
-            if (dursec == 0) {
+            if (dursec <= 5) {
                 duracell.innerHTML = ((duriation / 1000) % 60).toFixed(1) + "s";
             } else {
                 duracell.innerHTML = dursec + "s";
@@ -556,7 +611,11 @@ function togglerec(name) {
         } else if (durmin > 0) {
             duracell.innerHTML += durmin + "m " + dursec + "s";
         } else {
-            duracell.innerHTML += dursec + "s";
+            if (dursec <= 5) {
+                duracell.innerHTML = ((duriation / 1000) % 60).toFixed(1) + "s";
+            } else {
+                duracell.innerHTML = dursec + "s";
+            }
         }
 
         for (
@@ -600,6 +659,7 @@ function togglerec(name) {
     } else {
         data[selectedsubj]["recording"] = true;
         data[selectedsubj]["timestamp"] = Date.now();
+        writedata()
         subjstatus.style.backgroundColor = "#008d4c";
         subjstatus.innerText = "Recording...";
     }
@@ -621,9 +681,24 @@ function addtask(subject) {
     writedata()
 
     let row = tableelements.insertRow(-1);
+    
     let namecell = row.insertCell(-1);
     let donecell = row.insertCell(-1);
-
+    namecell.addEventListener("contextmenu", (event) => {
+        event.preventDefault()
+        document.getElementById("custommenu").style.top = event.clientY + "px"
+        document.getElementById("custommenu").style.left = event.clientX + "px"
+        document.getElementById("custommenu").style.display = "unset"
+        document.getElementById("delitem").onclick = () => {
+            delete todo[subject][row.id]
+            writetodo() 
+            loadtodo(subject)
+        }
+    })
+    namecell.ondblclick = (event) => {
+        console.log(event.target.innerText, event.target.parentNode.id)
+        edittask(subject, event.target)
+    }
     namecell.innerText = taskname;
 
     let checkbox = document.createElement("input");
@@ -678,6 +753,12 @@ function togglesubj(subject, id) {
     }
 }
 
+document.addEventListener("mouseup", () => {
+    
+    document.getElementById("custommenu").style.display = "none"
+
+}) 
+
 function loadtodo(subject) {
     if (!todo[subject]) {
         todo[subject] = {}
@@ -698,6 +779,21 @@ function loadtodo(subject) {
         let row = table.insertRow(-1);
         row.id = id;
         let namecell = row.insertCell(-1);
+        namecell.addEventListener("contextmenu", (event) => {
+            event.preventDefault()
+            document.getElementById("custommenu").style.top = event.clientY + "px"
+            document.getElementById("custommenu").style.left = event.clientX + "px"
+            document.getElementById("custommenu").style.display = "unset"
+            document.getElementById("delitem").onclick = () => {
+                delete todo[subject][row.id]
+                writetodo() 
+                loadtodo(subject)
+            }
+        })
+        namecell.ondblclick = (event) => {
+            console.log(event.target.innerText, event.target.parentNode.id)
+            edittask(subject, event.target)
+        }
         namecell.innerText = name;
 
         let donecell = row.insertCell(-1);
@@ -713,4 +809,104 @@ function loadtodo(subject) {
 
         table.appendChild(row);
     }
+}
+
+function updatenote(subject) {
+    if (!notes[subject]) {
+        notes[subject] = ""
+        writenotes()
+    }
+    console.log(document.getElementById("notearea").value)
+    notes[subject] = document.getElementById("notearea").value
+    writenotes()
+}
+
+function editsubj(target) {
+    let inputfield = document.createElement("input")
+    let firstname = target.innerText
+    inputfield.className = "subjeditfield"
+    inputfield.value = target.innerText
+    inputfield.onkeyup = (event) => {
+        if (event.code == "Enter") {
+            if (inputfield.value == firstname) {
+                return target.innerHTML = inputfield.value  ;
+            }
+            if (inputfield.value.trim() == "") {
+                return alert("Subject name cannot be Empty!")
+            }
+            if (Object.keys(data).includes(inputfield.value)) {
+                return alert("A Subject with this Name exists already!")
+            } 
+            data[inputfield.value] = data[firstname]
+            notes[inputfield.value] = notes[firstname]
+            todo[inputfield.value] = todo[firstname]
+            delete data[firstname]
+            delete notes[firstname]
+            delete todo[firstname]
+            writedata()
+            writenotes()
+            writetodo()
+            selectsubj(inputfield.value)
+            console.log(data, firstname, inputfield.value)
+            target.innerHTML = inputfield.value  
+        }
+    }
+    target.innerHTML =  ""
+    target.appendChild(inputfield)
+}
+
+function exportall() {
+    let exportjson = JSON.stringify({"data": data, "todo": todo, "notes": notes})
+    let blob = new Blob([exportjson], {"type": "application/json"})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'output.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importall(usrdata) {
+    const file = (usrdata.files[0])
+    const reader = new FileReader()
+
+    reader.onload = (event) => {
+        const content = event.target.result
+        let jsoncontent = JSON.parse(content)
+        data = jsoncontent["data"]
+        todo = jsoncontent["todo"]
+        notes = jsoncontent["notes"]
+        writedata()
+        writenotes()
+        writetodo()
+        window.location.reload()
+    }
+
+    reader.readAsText(file)
+}
+
+function edittask(subject, target) {
+    let todoinputfield = document.createElement("input")
+    let firstname = target.innerText
+    let tablefield = target
+    todoinputfield.value = firstname
+    todoinputfield.onkeyup = (event) => {
+        if (event.code == "Enter") {
+            if (todoinputfield.value == firstname) {
+                return target.innerText = todoinputfield.value;
+            }
+            if (todoinputfield.value.trim() == "") {
+                return alert("Task name cannot be Empty!")
+            }
+            
+            todo[subject][target.parentNode.id]["name"] = todoinputfield.value
+            console.log("todo", firstname, todoinputfield.value)
+            writetodo()
+            target.innerHTML = todoinputfield.value  
+        }
+    }
+    tablefield.innerHTML = ""
+    tablefield.appendChild(todoinputfield)
 }

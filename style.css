@@ -8,6 +8,9 @@
     overflow-y: hidden;
 
     transition: 0.5s all ease-in-out;
+
+    display: grid;
+    grid-template-rows: auto 1fr auto;
 }
 
 .bartoggle {
@@ -185,7 +188,7 @@
     width: 100%;
     padding-left: 20px;
     padding-right: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 
     display: grid;
     grid-template-columns: calc(50% - 10px) calc(50% - 10px);
@@ -202,8 +205,7 @@
     width: 0px;
 }
 
-.subjstatus {
-    
+.subjstatus { 
     background-color: #d73925;
     border: transparent;
     width: fit-content;
@@ -235,19 +237,20 @@
 }
 
 .subjbox {
-
     background-color: #c7c7c7;
     aspect-ratio: 4/2;   
     width: 100%;
 
-    margin-top: 20px;
+    margin-top: 10px;
 
     border: 1px solid #888888;
     border-radius: 10px;
+
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .subjsessions {
-    
     display: flex;
     flex-direction: column;
 }
@@ -377,8 +380,88 @@
     height: 100%;
     resize: none;
 
+    background-color: transparent;
+
     border: none;
+    border-radius: 10px;
+
     padding: 10px;
 
     font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+}
+
+.subjeditfield {
+    height: fit-content;
+    width: 90%;
+
+    padding: 5px;
+
+    border-radius: 5px;
+}
+
+#importexport {
+    width: 100%;
+    height: 50px;
+
+    border: 1px solid #bebebe;
+
+    display: flex;
+    flex-direction: row;
+
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#importexport button {
+    width: 50%;
+    height: 100%;
+    background-color: transparent;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+
+    transition: all 0.2s ease-in-out;
+}
+
+#import {
+    border: none;
+    border-left: 1px solid #7b7b7b;
+}
+
+#export {
+    border: none;
+    border-right: 1px solid #7b7b7b;
+}
+
+#importexport button:hover {
+    background-color: #7b7b7b;
+}
+
+.custommenu {
+    display: none;
+
+    width: 125px;
+    height: fit-content;
+
+    left: 300px;
+    
+    position: absolute;
+    background-color: transparent;
+
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.custommenu button {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 5px;
+    border: none;
+}
+
+.custommenu button:hover{
+    background-color: #b7b7b7;
 }
