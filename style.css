@@ -11,6 +11,8 @@
 
     display: grid;
     grid-template-rows: auto 1fr auto;
+
+    z-index: 999;
 }
 
 .bartoggle {
@@ -248,6 +250,7 @@
 
     -webkit-user-select: none;
     user-select: none;
+    
 }
 
 .subjsessions {
@@ -464,4 +467,10 @@
 
 .custommenu button:hover{
     background-color: #b7b7b7;
+}
+
+@media (max-device-width: 700px) {
+    .subjinfo {
+        grid-template-columns: 100%;
+    }
 }

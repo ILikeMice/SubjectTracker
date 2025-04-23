@@ -4,23 +4,24 @@ let subjstatus = document.getElementById("subjstatus");
 let sessiontable = document.getElementById("sessiontable");
 
 let data = getdata();
-if (data == undefined) {
+if (data == null) {
     data = {};
     console.log("nodata");
     writedata();
 }
 
 let todo = gettodo();
-if (todo == undefined) {
+if (todo == null) {
     todo = {};
     writetodo();
 }
 
 let notes = getnotes();
-if (notes == undefined) {
+if (notes == null) {
     notes = {};
     writenotes();
 }
+
 
 var timechart;
 
@@ -38,54 +39,27 @@ window.onerror = function (message, source, lineno, colno, error) {
 */
 
 function writedata() {
-    console.log("wrote");
-    document.cookie =
-        "data=" +
-        JSON.stringify(data) +
-        "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+    console.log("wrote", data);
+    window.localStorage.setItem("data", JSON.stringify(data))
 }
 function getdata() {
-    let cookies = document.cookie.split(";");
-    for (let cookie of cookies) {
-        let [key, value] = cookie.trim().split("=");
-        if (key == "data") {
-            return JSON.parse(value);
-        }
-    }
+    return JSON.parse(window.localStorage.getItem("data"))
 }
 
 function gettodo() {
-    let cookies = document.cookie.split(";");
-    for (let cookie of cookies) {
-        let [key, value] = cookie.trim().split("=");
-        if (key == "todo") {
-            return JSON.parse(value);
-        }
-    }
+    return JSON.parse(window.localStorage.getItem("todo"))
 }
 
 function writetodo() {
-    document.cookie =
-        "todo=" +
-        JSON.stringify(todo) +
-        "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+    window.localStorage.setItem("todo", JSON.stringify(todo))
 }
 
 function getnotes() {
-    let cookies = document.cookie.split(";");
-    for (let cookie of cookies) {
-        let [key, value] = cookie.trim().split("=");
-        if (key == "notes") {
-            return JSON.parse(value);
-        }
-    }
+    return JSON.parse(window.localStorage.getItem("notes"))
 }
 
 function writenotes() {
-    document.cookie =
-        "notes=" +
-        JSON.stringify(notes) +
-        "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+    window.localStorage.setItem("notes", JSON.stringify(notes))
 }
 
 document.getElementById("newsubjinput").onkeyup = (event) => {
@@ -755,10 +729,8 @@ function togglesubj(subject, id) {
     }
 }
 
-document.addEventListener("mouseup", () => {
-    
+document.addEventListener("mouseup", () => {  
     document.getElementById("custommenu").style.display = "none"
-
 }) 
 
 function loadtodo(subject) {
